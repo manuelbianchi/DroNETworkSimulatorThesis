@@ -94,7 +94,7 @@ class Simulator:
         self.event_generator = utilities.EventGenerator(self)
 
     def __setup_net_dispatcher(self):
-        self.network_dispatcher = MediumDispatcher(self.metrics)
+        self.network_dispatcher = MediumDispatcher(self, self.metrics)
 
     def __set_metrics(self):
         """ the method sets up all the parameters in the metrics class """
@@ -218,6 +218,9 @@ class Simulator:
             # in case we need probability map
             if config.ENABLE_PROBABILITIES:
                 self.increase_meetings_probs(self.drones, cur_step)
+
+            # send the hearth beat in the network
+            self.depot.send_hearth_beat(cur_step)
 
             if cur_step % 10000 == 0:
                 end = time.time()

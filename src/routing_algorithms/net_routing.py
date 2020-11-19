@@ -2,13 +2,18 @@
 import src.utilities.utilities as util
 from src.entities.uav_entities import DataPacket
 from src.simulation.metrics import Metrics
+from src.utilities import config
 
 
 class MediumDispatcher:
 
-    def __init__(self, metric_class: Metrics):
+    def __init__(self, simulator, metric_class: Metrics):
         self.packets = []
+        self.simulator = simulator
         self.metric_class = metric_class
+
+    def medium_delay(self):
+        return self.simulator.rnd_routing.randint(config.MIN_DELAY, config.MAX_DELAY)
 
     def send_packet_to_medium(self, packet, src_drone, dst_drone, to_send_ts):
         if isinstance(packet, DataPacket):
@@ -16,7 +21,7 @@ class MediumDispatcher:
         else:
             self.metric_class.all_control_packets_in_simulation += 1
 
-        self.packets.append((packet, src_drone, dst_drone, to_send_ts))
+        self.packets.append((packet, src_drone, dst_drone, to_send_ts + self.medium_delay()))
 
     def run_medium(self, current_ts):
         to_drop_indices = []

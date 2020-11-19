@@ -179,6 +179,22 @@ class HelloPacket(Packet):
         self.src_drone = src_drone
 
 
+class HearthBeat(Packet):
+    """ An HearthBeat message is responsible to continue the tree or to broke it """
+    def __init__(self, src, time_step_creation, simulator, optional_command):
+        """
+
+        :param src: who send to me the packet
+        :param time_step_creation: the time of creation of this packet
+        :param simulator: the simulator istance
+        :param optional_command:  0 (continue the tree) --- 1 (broke the tree)  --- 2 (start send the data)
+        """
+        super().__init__(time_step_creation, simulator, None)
+        self.src = src
+        self.time_step_creation = time_step_creation
+        self.simulator = simulator
+        self.optional_command = optional_command
+
 # ------------------ Depot ----------------------
 class Depot(Entity):
     """ The depot is an Entity. """
@@ -203,6 +219,23 @@ class Depot(Entity):
             self.simulator.metrics.drones_packets_to_depot.add((pck, cur_step))
             self.simulator.metrics.drones_packets_to_depot_list.append((pck, cur_step))
             pck.time_delivery = cur_step
+
+    def send_hearth_beat(self, cur_step):
+        """ this method is responsable to send hearth beat to the drones
+            The hearth beat is used to check connectivity with the depot
+         """
+        if cur_step % config.HELLO_DELAY == 0:
+            all_drones = self.simulator.drones
+            closest_drones = [drone for drone in all_drones
+                              if utilities.euclidean_distance(self.coords, drone.coords)
+                                    < min(self.communication_range, drone.communication_range)]
+
+            opt_command = 0
+
+            hearth_packet = HearthBeat(self, cur_step, self.simulator, opt_command)
+            for drone in closest_drones:
+                self.simulator.network_dispatcher.send_packet_to_medium(hearth_packet, self, drone,
+                                                                        cur_step)
 
 
 # ------------------ Drone ----------------------

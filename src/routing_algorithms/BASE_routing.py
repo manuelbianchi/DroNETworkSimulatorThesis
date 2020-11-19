@@ -1,6 +1,6 @@
 
 
-from src.entities.uav_entities import DataPacket, ACKPacket, HelloPacket, Packet
+from src.entities.uav_entities import DataPacket, ACKPacket, HelloPacket, Packet, HearthBeat
 from src.utilities import utilities as util
 from src.utilities import config
 
@@ -23,6 +23,8 @@ class BASE_routing(metaclass=abc.ABCMeta):
         self.network_disp = simulator.network_dispatcher
         self.simulator = simulator
         self.no_transmission = False
+        self.last_depot_message = None
+        self.is_connected = False
 
     @abc.abstractmethod
     def relay_selection(self, geo_neighbors):
@@ -52,6 +54,41 @@ class BASE_routing(metaclass=abc.ABCMeta):
                 self.current_n_transmission = 0
                 self.drone.move_routing = False
 
+        elif isinstance(packet, HearthBeat):
+            self.__handle_hearth_beat(packet, current_ts)
+
+    def __handle_hearth_beat(self, packet, cur_step):
+        """
+            Handle the heart beat message
+
+        :param packet:
+        :param cur_step:
+        :return:
+        """
+        command = packet.optional_command
+        if self.last_depot_message is None:  # first time we receive the hearth beat
+            self.last_depot_message = (command, packet.time_step_creation)
+        else:
+            last_command, time_step_creation = self.last_depot_message
+            if time_step_creation >= packet.time_step_creation:  # we received a too old hearth beat
+                return
+            self.last_depot_message = (command, packet.time_step_creation)
+
+        if command == 0:
+            pass  # do something if you need
+        elif command == 1:
+            pass  # do something if you need
+        else:
+            pass  # do something if you need
+
+        # forwad the packet to my neigh drones
+        src_ = packet.src
+        drones_to_send = [drone for drone in self.simulator.drones
+                          if drone.identifier != src_.identifier]
+        relay_message = HearthBeat(self.drone, packet.time_step_creation, self.simulator, packet.optional_command)
+        self.broadcast_message(relay_message, self.drone, drones_to_send, cur_step)
+
+
     def drone_identification(self, drones, cur_step):
         """ handle drone hello messages to identify neighbors """
         # if self.drone in drones: drones.remove(self.drone)  # do not send hello to yourself
@@ -72,9 +109,18 @@ class BASE_routing(metaclass=abc.ABCMeta):
         # close this routing pass
         self.routing_close(drones, cur_step)
 
+    def check_connectivity(self, cur_step):
+        """ check whether the drone is connected (to the depot) or another drone ? network? """
+        if self.last_depot_message is None:  # no messages from the depot
+            self.is_connected = False
+        else:
+            self.is_connected = self.last_depot_message[1] >= cur_step - config.OLD_HELLO_PACKET
 
     def send_packets(self, cur_step):
         """ procedure 3 -> choice next hop and try to send it the data packet """
+
+        # check the connectivity and add a flag if connected or not
+        self.check_connectivity(cur_step)
 
         # FLOW 0
         if self.no_transmission or self.drone.buffer_length() == 0:
@@ -157,7 +203,7 @@ class BASE_routing(metaclass=abc.ABCMeta):
     def unicast_message(self, packet, src_drone, dst_drone, curr_step):
         """ send a message to my neigh drones"""
         # Broadcast using Network dispatcher
-        self.simulator.network_dispatcher.send_packet_to_medium(packet, src_drone, dst_drone, curr_step + config.LIL_DELTA)
+        self.simulator.network_dispatcher.send_packet_to_medium(packet, src_drone, dst_drone, curr_step)
 
     def gaussian_success_handler(self, drones_distance):
         """ get the probability of the drone bucket """

@@ -110,8 +110,9 @@ RETRANSMISSION_DELAY = 10     # int: how many time steps to wait before transmit
 # ------------------------------------------- ROUTING MISC --------------------------------- #
 HELLO_DELAY = 5            # int : how many time steps wait before transmit again an hello message
 RECEPTION_GRANTED = 0.95   # float : the min amount of success to evalute a neigh as relay
-LIL_DELTA = 1              # INT:  > 0
 OLD_HELLO_PACKET = 50
+MAX_DELAY = 3
+MIN_DELAY = 1
 
 ROOT_EVALUATION_DATA = "data/evaluation_tests/"
 
