@@ -20,16 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a3dec675-05bb-46fb-8c65-0ceb53878234" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/DroNETworkSimulatorThesis.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/routing_algorithms/CPVF_routing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/entities/uav_entities.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/uav_entities.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/routing_algorithms/BASE_routing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routing_algorithms/BASE_routing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routing_algorithms/CPVF_routing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routing_algorithms/CPVF_routing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utilities/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -54,7 +48,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../BiometricSystems" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.main">

@@ -1,6 +1,6 @@
 
 
-from src.entities.uav_entities import DataPacket, ACKPacket, HelloPacket, Packet, HearthBeat, PathParentInquiryPacket
+from src.entities.uav_entities import DataPacket, ACKPacket, HelloPacket, Packet, HearthBeat, ParentPacket
 from src.utilities import utilities as util
 from src.utilities import config
 
@@ -26,7 +26,7 @@ class BASE_routing(metaclass=abc.ABCMeta):
         self.no_transmission = False
         self.last_depot_message = None
         self.is_connected = False
-        self.there_exists_cycle = False
+        #self.there_exists_cycle = False
 
     @abc.abstractmethod
     def relay_selection(self, geo_neighbors):
@@ -59,14 +59,18 @@ class BASE_routing(metaclass=abc.ABCMeta):
         elif isinstance(packet, HearthBeat):
             self.__handle_hearth_beat(packet, current_ts)
 
-        elif isinstance(packet,PathParentInquiryPacket):
-            src_id = packet.src_drone.identifier
-            if packet.time_step_creation <= current_ts - config.OLD_HELLO_PACKET:
-                if packet in self.path_parent_inquiry_packets[src_id]:
-                    self.there_exists_cycle = True
-                else:
-                    self.path_parent_inquiry_packets[src_id] = packet
-                    self.__handle_path_parent_inquiry_packet(packet,current_ts)
+        #Qui controlliamo se c'è un ciclo.
+        elif isinstance(packet,ParentPacket):
+            # se il pacchetto ricevuto era stato inviato da noi stessi allora abbiamo un ciclo.
+            if (packet.src == self.drone.identifier):
+                  self.drone.check_cycle = True
+            #se abbiamo un parent inviamo un pacchetto a lui
+            elif (self.drone.parentPath != None):
+                self.unicast_message(packet,self.drone,self.drone.parentPath,current_ts)
+            else:
+                #Droppa il pacchetto se non ha un parent.
+                self.drone.remove_packets([packet])
+
 
 
     def __handle_hearth_beat(self, packet, cur_step):
@@ -95,29 +99,21 @@ class BASE_routing(metaclass=abc.ABCMeta):
 
         # forwad the packet to my neigh drones
         src_ = packet.src
+        # andiamo a scrivere il pathParent
+        #NUOVO CODICE
+        # se il drone non ha un parent path gli assegniamo qualsiasi cosa...
+        self.drone.parentPath = src_
+
+
+
+
+        #FINE NUOVO CODICE.
         drones_to_send = [drone for drone in self.simulator.drones
                           if drone.identifier != src_.identifier]
         relay_message = HearthBeat(self.drone, packet.time_step_creation, self.simulator, packet.optional_command)
         self.broadcast_message(relay_message, self.drone, drones_to_send, cur_step)
 
-    def handle_path_parent_inquiry(self, packet,cur_step):
-        if cur_step % config.HELLO_DELAY != 0:
-            return
-        src_ = packet.src
-        drones_to_send = [drone for drone in self.simulator.drones
-                          if drone.identifier != src_.identifier]
-        relay_message = PathParentInquiryPacket(self.drone,packet.time_step_creation,self.simulator)
-        self.broadcast_message(relay_message, self.drone, drones_to_send, cur_step)
-    #     # forwad the packet to my neigh drones
-    #     src_ = packet.src
-    #     if packet in self.path_parent_inquiry_packets[src_]:
-    #         self.there_exists_cycle = True
-    #     else:
-    #         self.path_parent_inquiry_packets[src_] = packet
-    #         drones_to_send = [drone for drone in self.simulator.drones
-    #                       if drone.identifier != src_.identifier]
-    #         relay_message = PathParentInquiryPacket(self.drone, packet.time_step_creation, self.simulator)
-    #         self.broadcast_message(relay_message, self.drone, drones_to_send, cur_step)
+
 
     def drone_identification(self, drones, cur_step):
         """ handle drone hello messages to identify neighbors """
@@ -146,9 +142,7 @@ class BASE_routing(metaclass=abc.ABCMeta):
         else:
             self.is_connected = self.last_depot_message[1] >= cur_step - config.OLD_HELLO_PACKET
 
-    def check_cycle(self,cur_step):
-        """check whether there exist a cycle"""
-        return self.there_exists_cycle
+
 
 
     def send_packets(self, cur_step):
