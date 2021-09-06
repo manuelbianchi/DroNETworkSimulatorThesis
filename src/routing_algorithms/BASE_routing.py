@@ -1,6 +1,6 @@
 
 
-from src.entities.uav_entities import DataPacket, ACKPacket, HelloPacket, Packet, HearthBeat, ParentPacket
+from src.entities.uav_entities import DataPacket, ACKPacket, HelloPacket, Packet, HearthBeat, ParentPacket, Drone
 from src.utilities import utilities as util
 from src.utilities import config
 
@@ -26,7 +26,6 @@ class BASE_routing(metaclass=abc.ABCMeta):
         self.no_transmission = False
         self.last_depot_message = None
         self.is_connected = False
-        #self.there_exists_cycle = False
 
     @abc.abstractmethod
     def relay_selection(self, geo_neighbors):
@@ -131,6 +130,8 @@ class BASE_routing(metaclass=abc.ABCMeta):
         self.drone_identification(drones, cur_step)
 
         self.send_packets(cur_step)
+
+        self.drone.update_time_to_create_networks_of_drones(cur_step)
 
         # close this routing pass
         self.routing_close(drones, cur_step)

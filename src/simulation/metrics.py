@@ -42,6 +42,13 @@ class Metrics:
         # number of time steps on mission, incremented each time drone is doing sensing mission
         self.time_on_mission = 0
 
+        # number of time steps to create the network of drones connect to the depot.
+        self.time_to_create_network_of_drones = 0 #MIO
+        self.area_covered_by_drones = 0 #Mio
+        self.area_covered_by_drones_ratio = 0
+
+
+
         self.time_on_active_routing = 0
 
     def score(self, undelivered_penalty=1.5):
@@ -128,6 +135,9 @@ class Metrics:
         print("number_of_packets_to_depot", self.number_of_packets_to_depot)
         print("packet_mean_delivery_time", self.packet_mean_delivery_time)
         print("event_mean_delivery_time", self.event_mean_delivery_time)
+        print("time_to_create_network_of_drones",self.time_to_create_network_of_drones)
+        print("area_covered_by_drones",self.area_covered_by_drones)
+        print("area_covered_by_drones_ratio", self.area_covered_by_drones_ratio)
 
     def info_mission(self):
         """ save all the mission / sim setup """
@@ -169,6 +179,7 @@ class Metrics:
         out_results["number_of_packets_to_depot"] = self.number_of_packets_to_depot
         out_results["packet_mean_delivery_time"] = self.packet_mean_delivery_time
         out_results["event_mean_delivery_time"] = self.event_mean_delivery_time
+        out_results["time_to_create_network_of_drones"] = self.time_to_create_network_of_drones #nuovo
         out_results["time_on_mission"] = self.time_on_mission
         out_results["all_control_packets_in_simulation"] = self.all_control_packets_in_simulation
         out_results["all_data_packets_in_simulation"] = self.all_data_packets_in_simulation
