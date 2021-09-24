@@ -180,6 +180,8 @@ class Metrics:
         out_results["packet_mean_delivery_time"] = self.packet_mean_delivery_time
         out_results["event_mean_delivery_time"] = self.event_mean_delivery_time
         out_results["time_to_create_network_of_drones"] = self.time_to_create_network_of_drones #nuovo
+        out_results["area_covered_by_drones"] = self.area_covered_by_drones #nuovo
+        out_results["area_covered_by_drones_ratio"] = self.area_covered_by_drones_ratio #nuovo
         out_results["time_on_mission"] = self.time_on_mission
         out_results["all_control_packets_in_simulation"] = self.all_control_packets_in_simulation
         out_results["all_data_packets_in_simulation"] = self.all_data_packets_in_simulation

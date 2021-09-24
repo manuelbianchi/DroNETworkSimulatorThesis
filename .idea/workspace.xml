@@ -20,11 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cbbe2c6d-3888-410f-89c1-d30cf2bd4611" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/DroNETworkSimulatorThesis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/DroNETworkSimulatorThesis.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/entities/uav_entities.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/uav_entities.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routing_algorithms/BASE_routing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routing_algorithms/BASE_routing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/experiments/experiment_ndrones.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/experiments/experiment_ndrones.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/experiments/json_and_plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/experiments/json_and_plot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routing_algorithms/CPVF_routing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routing_algorithms/CPVF_routing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/simulation/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/simulation/metrics.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utilities/config.py" afterDir="false" />
     </list>
@@ -77,6 +77,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="json_and_plot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="DroNETworkSimulatorThesis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/experiments" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/experiments/json_and_plot.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" singleton="false" temporary="true" nameIsGenerated="true">
       <module name="DroNETworkSimulatorThesis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -119,27 +140,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="uav_entities" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="DroNETworkSimulatorThesis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/entities" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/entities/uav_entities.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="run_ndrones.sh" type="ShConfigurationType" temporary="true">
       <option name="SCRIPT_TEXT" value="" />
       <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
@@ -159,16 +159,16 @@
       <item itemvalue="Python.experiment_ndrones" />
       <item itemvalue="Python.main" />
       <item itemvalue="Python.metrics" />
-      <item itemvalue="Python.uav_entities" />
+      <item itemvalue="Python.json_and_plot" />
       <item itemvalue="Shell Script.run_ndrones.sh" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.metrics" />
-        <item itemvalue="Python.experiment_ndrones" />
+        <item itemvalue="Python.json_and_plot" />
         <item itemvalue="Shell Script.run_ndrones.sh" />
-        <item itemvalue="Python.uav_entities" />
+        <item itemvalue="Python.experiment_ndrones" />
+        <item itemvalue="Python.metrics" />
       </list>
     </recent_temporary>
   </component>
@@ -207,6 +207,11 @@
         <watch expression="nearest_drone.stop" language="Python" />
         <watch expression="move_routing" language="Python" />
         <watch expression="self.move_routing" language="Python" />
+        <watch expression="drone.identifier != self.identifier and (utilities.euclidean_distance(self.last_mission_coords,drone.coords) &lt; self.communication_range)" language="Python" />
+        <watch expression="utilities.euclidean_distance(self.last_mission_coords,drone.coords)" language="Python" />
+        <watch expression="self.last_mission_coords" language="Python" />
+        <watch expression="drone.coords" language="Python" />
+        <watch expression="drone.identifier" language="Python" />
       </configuration>
     </watches-manager>
   </component>

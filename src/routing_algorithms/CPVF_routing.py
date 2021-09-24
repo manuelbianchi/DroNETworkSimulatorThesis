@@ -1,6 +1,7 @@
 
 import src.utilities.utilities as util
 import numpy as np
+#from src.entities.uav_entities import Drone
 
 
 
@@ -14,6 +15,7 @@ from src.routing_algorithms.BASE_routing import BASE_routing
 class CPVF_routing(BASE_routing):
     def __init__(self, drone, simulator):
         BASE_routing.__init__(self, drone, simulator)
+        drone.type_drone = "CPVF"
 
 
 

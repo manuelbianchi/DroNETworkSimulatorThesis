@@ -80,6 +80,7 @@ def mean_std_of_metric(filename_format : str, ndrones : int,
             elif metric == "ratio_delivery_detected":
                 data.append(ktri_0["number_of_events_to_depot"] 
                                 / ktri_0["number_of_detected_events"])
+            #elif metric == "area_covered_by_drones_ratio":
             else:
                 data.append(ktri_0[metric])
 
@@ -90,7 +91,8 @@ def plot_ndrones(filename_format : list, ndrones :list, metric : str,
                 alg_ritrasmission : list, seeds :list, out_dir : str, 
                 exp_metric : str):
     """ plot for varying ndrones """
-    
+
+
     x = list(ndrones)
     # { k_0 : [y_1, y_2, y_3, .... ]}
     # { k_250 : [y_1, y_2, y_3, .... ]}
@@ -109,21 +111,58 @@ def plot_ndrones(filename_format : list, ndrones :list, metric : str,
 
     ax.grid()
     for alg_k in out_data.keys():
+        # convertiamo i valori in percentuale
         y_data = out_data[alg_k]
-        #TODO: texture and colors and linestyle for the results 
-        ax.plot(x, y_data, label=alg_k)
+        if (metric == "area_covered_by_drones_ratio"):
+            for i in range(len(y_data)):
+                y_data[i] = y_data[i] * 100
+        if (metric == "time_to_create_network_of_drones"):
+            for i in range(len(y_data)):
+                y_data[i] = y_data[i] * config.TS_DURATION
 
-    plt.ylabel(metric, fontsize=LABEL_SIZE)
-    plt.xlabel(exp_metric.replace("_", ""), fontsize=LABEL_SIZE)
 
-    plt.xticks(ndrones)
+
+
+
+
+        #TODO: texture and colors and linestyle for the results
+        ax.plot(x, y_data, label=alg_k, marker = 'o')
+
+    if(metric != "area_covered_by_drones_ratio" and metric != "time_to_create_network_of_drones"):
+        plt.ylabel(metric, fontsize=LABEL_SIZE)
+        plt.xlabel(exp_metric.replace("_", ""), fontsize=LABEL_SIZE)
+
+        plt.xticks(ndrones)
+
+        plt.title(str(alg_ritrasmission) + "_" + metric)
+
+        handles, labels = ax.get_legend_handles_labels()
+        plt.legend() #handles, labels, prop={'size': LEGEND_SIZE})
+    elif metric == "area_covered_by_drones_ratio":
+        plt.ylabel("Covered Area (%)", fontsize=LABEL_SIZE)
+        plt.xlabel("No. of Drones", fontsize=LABEL_SIZE)
+
+        plt.ylim(0,100)
+
+        plt.xticks(ndrones)
+
+        plt.title("Covered Area by Drones (%)")
+
+        handles, labels = ax.get_legend_handles_labels()
+        plt.legend()  # handles, labels, prop={'size': LEGEND_SIZE})
+    elif metric == "time_to_create_network_of_drones":
+        plt.ylabel("Completion Time (sec)", fontsize=LABEL_SIZE)
+        plt.xlabel("No. of Drones", fontsize=LABEL_SIZE)
+
+
+        plt.xticks(ndrones)
+
+        plt.title("Completion Time by Drones")
+
+        handles, labels = ax.get_legend_handles_labels()
+        plt.legend()  # handles, labels, prop={'size': LEGEND_SIZE})
     
-    plt.title(str(alg_ritrasmission) + "_" + metric)
-    
-    handles, labels = ax.get_legend_handles_labels()
-    plt.legend() #handles, labels, prop={'size': LEGEND_SIZE})
-    
-    if metric == "Routing time / mission time":
+    elif metric == "Routing time / mission time":
         metric ="routing_time_mission_time"
     #plt.tight_layout()
     plt.savefig(out_dir + metric + ".png")
@@ -143,10 +182,13 @@ METRICS_OF_INTEREST = [
         'packet_mean_delivery_time', 
         'event_mean_delivery_time', 
         'time_on_mission',
-        'time_on_active_routing', 
-        'Routing time / mission time',
+        #'time_on_active_routing',
+        #'Routing time / mission time',
         'ratio_delivery_generated',
-        'ratio_delivery_detected']
+        'ratio_delivery_detected',
+        'time_to_create_network_of_drones',
+        'area_covered_by_drones',
+        'area_covered_by_drones_ratio']
 
 
 
