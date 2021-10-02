@@ -269,6 +269,7 @@ class Drone(Entity):
         # new fields
         # self.distance_between_drones = self.simulator.drone_com_range - 1
         # self.count_into_pathParent = 100
+        self.count = 0
         self.type_drone = "SVF"
         self.parentPath = None
         self.check_cycle = False
@@ -277,6 +278,7 @@ class Drone(Entity):
         self.flag_all_connected = True
         self.flag_move = False
         self.flag_goes_out_network = False
+        self.history_coords = []
         ###
         self.depot = depot
         self.path = path
@@ -420,11 +422,15 @@ class Drone(Entity):
                 # print("Dist del parentDrone dal depot", parentDrone_distance_depot)
                 # print("Mio Drone:", str(self.identifier), "Drone parent", str(self.parentPath.identifier))
                 if (myDrone_distance_depot < parentDrone_distance_depot):
+                    # if (self.identifier == 9):
+                    #     print("uno")
                     self.parentPath = None
                     self.stop = False
                     self.timer = 1000
                     # self.last_mission_coords = self.coords
                 elif (self.routing_algorithm.is_connected) == False:
+                    # if (self.identifier == 9):
+                    #     print("due")
                     # self.parentPath = None
                     # self.stop = False
                     # self.timer = 1000
@@ -456,10 +462,29 @@ class Drone(Entity):
 
                     # in direzione del depot tutti droni.
                 elif self.parentPath.identifier == self.depot.identifier:
+                    # if (self.identifier == 9):
+                    #     print("tre")
+                        #print(utilities.euclidean_distance(self.coords,self.depot.coords))
                     # print("CIAONE")
                     # drones = self.simulator.drones
-                    if math.ceil(
-                            utilities.euclidean_distance(self.coords, self.depot.coords)) == self.communication_range:
+                    if (math.ceil(
+                            utilities.euclidean_distance(self.coords, self.depot.coords)) == self.communication_range) or\
+                        (math.ceil(
+                            utilities.euclidean_distance(self.coords, self.depot.coords)) == self.communication_range-1) or \
+                        (math.ceil(
+                                utilities.euclidean_distance(self.coords,
+                                                             self.depot.coords)) == self.communication_range - 2) or \
+                        (math.ceil(
+                                utilities.euclidean_distance(self.coords,
+                                                             self.depot.coords)) == self.communication_range - 3) or \
+                        (math.ceil(
+                                utilities.euclidean_distance(self.coords,
+                                                             self.depot.coords)) == self.communication_range - 4) or \
+                        (math.ceil(
+                                utilities.euclidean_distance(self.coords,
+                                                             self.depot.coords)) == self.communication_range - 5):
+                        # if (self.identifier == 23):
+                        #     print("BLOCCATO")
                         self.stop = True
                         # self.flag_move = True
                     # self.move_routing = False
@@ -467,8 +492,12 @@ class Drone(Entity):
                     # self.coords = self.last_mission_coords
 
                 elif self.parentPath.identifier != self.depot.identifier and self.routing_algorithm.is_connected and self.parentPath.stop and \
+                        (math.ceil(utilities.euclidean_distance(self.coords,
+                                                               self.parentPath.coords)) == self.communication_range or \
                         math.ceil(utilities.euclidean_distance(self.coords,
-                                                               self.parentPath.coords)) == self.communication_range:
+                                                               self.parentPath.coords)) == self.communication_range - 1):
+                    # if (self.identifier == 9):
+                    #     print("quattro")
                     #     math.ceil(utilities.euclidean_distance(self.coords, self.parentPath.coords)) in range(
                     # self.communication_range - 15, self.communication_range + 1):
                     #:
@@ -477,8 +506,10 @@ class Drone(Entity):
 
                     self.stop = True
                 elif self.routing_algorithm.is_connected and \
-                        math.ceil(utilities.euclidean_distance(self.coords,
-                                                               self.parentPath.coords)) < self.communication_range:
+                        (utilities.euclidean_distance(self.coords,
+                                                               self.parentPath.coords)) < self.communication_range-5:
+                    # if (self.identifier == 9):
+                    #     print("cinque")
                     # math.ceil(utilities.euclidean_distance(self.coords, self.parentPath.coords)) < (self.communication_range - 15):
 
                     # print("Parentpath:", self.parentPath.identifier, "Depot:", self.depot.identifier)
@@ -501,6 +532,8 @@ class Drone(Entity):
                 myDrone_distance_depot = utilities.euclidean_distance(self.coords, self.simulator.depot_coordinates)
                 parentDrone_distance_depot = utilities.euclidean_distance(self.parentPath.coords,
                                                                           self.simulator.depot_coordinates)
+                if len(self.history_coords) == len(self.path):
+                    self.history_coords = []
                 # print("Dist del mio drone dal depot", myDrone_distance_depot)
                 # print("Dist del parentDrone dal depot", parentDrone_distance_depot)
                 # print("Mio Drone:", str(self.identifier), "Drone parent", str(self.parentPath.identifier))
@@ -508,8 +541,8 @@ class Drone(Entity):
                 # se il nostro drone è più vicino del parent non si aggancia e continua.
                 if (myDrone_distance_depot < parentDrone_distance_depot)  and self.parentPath.identifier != self.depot.identifier and \
                         self.parentPath.stop and self.flag_goes_out_network != True:
-                    # if (self.identifier == 12):
-                    #     print("uno")
+                    if (self.identifier == 7):
+                        print("uno")
                     self.parentPath = None
                     self.stop = False
                     self.timer = 1000
@@ -520,19 +553,29 @@ class Drone(Entity):
                 # per libera si intende che non è all'interno di nessun communication_range di alcun drone.
                 #TODO da ragionarci domani
                 if(self.parentPath == None):
-                    # if(self.identifier == 12):
-                    #     print("NONE")
+                    if(self.identifier == 7):
+                        print("NONE")
 
                     #self.flag_goes_out_network = True
                     for i in range(len(self.path)):
                         right_distance = True
                         self.last_mission_coords = self.path[i]
+                        # if (self.identifier == 7):
+                        #     print(self.last_mission_coords)
+                        #     print(self.history_coords)
+                        if self.last_mission_coords in self.history_coords:
+                            continue
+                        else:
+                            self.history_coords.append(self.last_mission_coords)
                         for drone in drones:
-                            if drone.identifier != self.identifier and drone.stop and \
-                                    (utilities.euclidean_distance(self.last_mission_coords,
-                                                                  drone.coords) < self.communication_range):
-                                right_distance = False
-                                break
+                                if drone.identifier != self.identifier and drone.stop and  \
+                                        (utilities.euclidean_distance(self.last_mission_coords,
+                                                                      drone.coords) < self.communication_range):
+                                    # if self.last_mission_coords not in self.history_coords:
+                                    #     self.history_coords.append(self.last_mission_coords)
+
+                                    right_distance = False
+                                    break
                         if right_distance == True:
                             return
 
@@ -541,11 +584,13 @@ class Drone(Entity):
                 if (self.parentPath != None) and (self.routing_algorithm.is_connected) == False and \
                         self.parentPath.identifier != self.simulator.depot.identifier and \
                         self.parentPath.stop and self.flag_goes_out_network != True:
-                    # if (self.identifier == 12):
-                    #     print("due")
+                    if (self.identifier == 7):
+                        print("due")
                     # self.flag_goes_out_network = False #prima era false
 
                     self.last_mission_coords = self.parentPath.coords
+                    if self.last_mission_coords not in self.history_coords:
+                        self.history_coords.append(self.last_mission_coords)  # nuova parte
                     self.flag_goes_out_network = True
 
                     # # for i in range(len(self.path)):
@@ -592,16 +637,20 @@ class Drone(Entity):
                 if (self.parentPath != None) and (self.routing_algorithm.is_connected) == False and \
                         self.parentPath.identifier != self.depot.identifier and self.parentPath.stop == False and \
                         self.flag_goes_out_network != True:
-                    # if (self.identifier == 12):
-                    #     print("tre")
+                    if (self.identifier == 7):
+                        print("tre")
                     self.flag_goes_out_network = False
-                    if self.last_mission_coords != self.coords:
-                        self.last_mission_coords = self.coords
-                    else:
-                        for i in range(len(self.path)):
-                            if self.path[i] != self.coords:
-                                self.last_mission_coords = self.path[i]
-                                break
+                    # if self.last_mission_coords != self.coords:
+                    #     self.last_mission_coords = self.coords
+                    #     if self.last_mission_coords not in self.history_coords:
+                    #         self.history_coords.append(self.last_mission_coords)  # nuova parte
+                    # else:
+                    #     for i in range(len(self.path)):
+                    #         if self.path[i] != self.coords:
+                    #             self.last_mission_coords = self.path[i]
+                    #             if self.last_mission_coords not in self.history_coords:
+                    #                 self.history_coords.append(self.last_mission_coords)    # nuova parte
+                    #             break
                     # controlliamo che la coordinata non è all'interno dello stesso parent!
                     if utilities.euclidean_distance(self.last_mission_coords,
                                                     self.parentPath.coords) < self.communication_range:
@@ -623,10 +672,11 @@ class Drone(Entity):
                     # se il nostro drone ha come path parent il depot possiamo agganciarci ad esso se la distanza è > del communication range con tutti gli altri droni.
                 if (self.parentPath != None) and self.parentPath.identifier == self.depot.identifier and \
                         (math.ceil(utilities.euclidean_distance(self.coords,
-                                                                self.depot.coords)) == self.communication_range):
+                                                                self.depot.coords)) == self.communication_range or math.ceil(utilities.euclidean_distance(self.coords,
+                                                                self.depot.coords)) == self.communication_range - 1 ):
                     # print("CIAONE DEPOT")
-                    # if (self.identifier == 12):
-                    #     print("quattro")
+                    if (self.identifier == 7):
+                        print("quattro")
                     drones = self.simulator.drones
                     right_distance = True
 
@@ -643,23 +693,61 @@ class Drone(Entity):
                             self.stop = False
                             break
 
-                    if right_distance:
+                    if right_distance and (self.coords != self.depot.coords):
+                        print(self.identifier,"fermo al depot")
                         self.stop = True
                         return
                     else:
-                        # if (self.identifier == 21):
-                        #     print("BLOCCATO")
+                        if (self.identifier == 7):
+                            print("BLOCCATO")
+
+
                         # self.parentPath = None #aggiunto adesso
                         # print(self.parentPath.identifier)
                         if (utilities.euclidean_distance(self.coords,
                                                          self.depot.coords) < self.communication_range):
+                            # print("qui")
                             for i in range(len(self.path)):
-                                if utilities.euclidean_distance(self.path[i],
-                                                                self.depot.coords) < self.communication_range:
-                                    self.last_mission_coords = self.path[i]
-                                    self.parentPath = None
+                                # da togliere dopo
+                                # if self.identifier == 13:
+                                #     print(self.history_coords)
+                                #     print(self.path[i])
+                                #####
 
-                        self.flag_goes_out_network = True
+                                if self.path[i] in self.history_coords:
+                                    continue
+                                else:
+                                    self.last_mission_coords = self.path[i]
+                                    self.history_coords.append(self.last_mission_coords)
+
+                                if (utilities.euclidean_distance(self.last_mission_coords,
+                                                                self.depot.coords) < self.communication_range):
+
+                                    # if self.identifier == 13:
+                                    #
+                                    #     print("BLOCCATO ECCOCI")
+                                    continue
+
+                                else:
+                                    print(self.last_mission_coords)
+                                    break# nuova parte
+                        if self.identifier == 7:
+                            print("BLOCCATO ECCOCI2")
+                        self.parentPath = None
+                        # if self.flag_goes_out_network == False:
+                        #     if self.identifier == 5:
+                        #         print("IF")
+
+                        if self.count > 10:
+                            self.flag_goes_out_network = True
+                        else:
+                            self.count += 1
+                        # else:
+                        #     if self.identifier == 5:
+                        #         print("ELSE")
+                        #     self.flag_goes_out_network = False
+                        #self.move = False
+                        #self.flag_goes_out_network = True   #in prova con tutto!
                         return
                         # self.flag_move = True
                     # return
@@ -668,44 +756,76 @@ class Drone(Entity):
                 # se il nostro drone è connesso, ha trovato un path parent che è diverso dal depot e si aggancerà(fermandosi) ad esso solo se sarà lontano almeno quanto il communication range-1 da tutti gli altri droni.
                 if (self.parentPath != None) and self.parentPath.identifier != self.depot.identifier and \
                         self.parentPath.stop and \
-                        math.ceil(utilities.euclidean_distance(self.coords,
-                                                               self.parentPath.coords)) == self.communication_range:
-                    # if (self.identifier == 12):
-                    #     print("cinque")
+                        (math.ceil(utilities.euclidean_distance(self.coords,
+                                                               self.parentPath.coords)) == self.communication_range or math.ceil(utilities.euclidean_distance(self.coords,
+                                                               self.parentPath.coords)) == self.communication_range -1) :
+                    if (self.identifier == 7):
+                        print("cinque")
                     right_distance = True
                     # print("Nome drone:", self.identifier, "Distanza:",
                     #       utilities.euclidean_distance(self.coords, self.parentPath.coords), "dal drone parent:",
                     #       self.parentPath.identifier)
                     for drone in drones:
-                        if self.identifier != drone.identifier and drone.stop and \
+                        if self.identifier != drone.identifier and drone.stop and self.parentPath.identifier != drone.identifier and\
                                 (utilities.euclidean_distance(self.coords,
-                                                              drone.coords) < self.communication_range - 1):
+                                                              drone.coords) < self.communication_range - 4):
+                            if self.identifier == 7:
+                                print("ERRORE")
                             right_distance = False
                             break
 
                     if right_distance == True and utilities.euclidean_distance(self.coords,
                                                                                self.depot.coords) >= self.communication_range:
 
-                        # if self.identifier == 20:
-                        #     print("FERMO")
+                        # if self.identifier == 7:
+                        print(self.identifier,"FERMO")
                         self.stop = True
                         return
                     else:
                         self.flag_goes_out_network = True
 
                 if (self.parentPath != None) and self.parentPath.identifier != self.depot.identifier and (
-                        math.ceil(utilities.euclidean_distance(self.coords,
+                        (utilities.euclidean_distance(self.coords,
                                                                self.depot.coords)) < self.communication_range):
-                    # if self.identifier == 12:
-                    #     print("NEW")
+                    if self.identifier == 7:
+                        print("NEW")
+                    #     print(self.parentPath.identifier)
                     # self.last_mission_coords = self.parentPath.coords
                     for i in range(len(self.path)):
-                        if math.ceil(utilities.euclidean_distance(self.last_mission_coords,
+                        self.last_mission_coords = self.path[i]
+                        if (utilities.euclidean_distance(self.last_mission_coords,
                                                                   self.depot.coords)) < self.communication_range:
-                            self.last_mission_coords = self.path[i]
+
+                            if self.path[i] == self.coords:
+                                continue
+                            if self.path[i] in self.history_coords:
+                                continue
+                            else:
+                                self.last_mission_coords = self.path[i]
+                                self.history_coords.append(self.last_mission_coords)
+
                         else:
+
                             break
-                    self.flag_goes_out_network = True
+                    # if(self.identifier == 1):
+                    #     print(self.parentPath.identifier)
+                    #     print(utilities.euclidean_distance(self.coords,self.parentPath.coords))
+                    #     print(utilities.euclidean_distance(self.last_mission_coords, self.parentPath.coords))
+
+                    # if self.flag_goes_out_network != True:
+                    if self.identifier == 7:
+                        print(self.count)
+
+                    # if self.count < 50:
+                    #     self.count += 1
+                    if self.count > 10:
+                        self.flag_goes_out_network = True
+                    else:
+                        self.count += 1
+
+                #da testare se può andare.
+                    # else:
+                    #    self.flag_goes_out_network = False
                     # return
                 # se siamo connessi e il nostro path parent è diverso dal depot ma siamo al suo interno, allora dobbiamo
                 # cercare di arrivare al confine di esso, ma se si trova all'interno della rete, allora
@@ -714,10 +834,10 @@ class Drone(Entity):
                         self.parentPath.identifier != self.depot.identifier \
                         and self.parentPath.stop and (utilities.euclidean_distance(self.coords,self.depot.coords) > self.communication_range) and\
                         (utilities.euclidean_distance(self.coords, self.parentPath.coords) <
-                        self.communication_range - 2) and self.flag_goes_out_network != False:
+                        self.communication_range - 5) and self.flag_goes_out_network != False:
 
-                    # if (self.identifier == 12):
-                    #     print("sei", self.parentPath.identifier)
+                    if (self.identifier == 7):
+                        print("sei", self.parentPath.identifier)
                     # la coordinata deve essere al di fuori di tutti i droni.
                     right_distance = True
                     for drone in drones:
@@ -726,8 +846,8 @@ class Drone(Entity):
                         if drone.identifier != self.identifier and drone.stop and \
                                 (utilities.euclidean_distance(self.last_mission_coords,
                                                               drone.coords) < self.communication_range):
-                            # if(self.identifier == 1):
-                            #     print("siamo qui")
+                            if(self.identifier == 7):
+                                print("siamo qui")
                             # if (self.identifier == 10):
                             #     print("dieci")
                             # if self.identifier == 20:
@@ -739,10 +859,29 @@ class Drone(Entity):
                         # viene assegnata una coordinata nuova...
 
                         for i in range(len(self.path)):
-                            # self.last_mission_coords = self.path[i]
                             right_distance = True
-                            self.last_mission_coords = self.path[i]
-                            # print(self.identifier,"cambio coords")
+                            # if self.identifier == 4:
+                            #     print(self.path[i])
+
+                            if self.path[i] in self.history_coords:
+                                # print(self.identifier,self.last_mission_coords)
+                                # print(self.history_coords)
+                                # if self.identifier == 4:
+                                #     print("BOHHHH")
+                                # if self.identifier == 12:
+                                #     print(i)
+
+                                if i == len(self.path)-1:    ###NEW PICCOLA MODIFICA
+                                    if self.identifier == 7:
+                                        print(len(self.path)-1, i)
+                                    self.history_coords = []
+                                    break
+                                continue
+                            else:
+                                if self.identifier == 7:
+                                    print("BINGO")
+                                self.last_mission_coords = self.path[i]
+                                self.history_coords.append(self.path[i])
 
                             for drone in drones:
                                 # questa coordinata non si deve trovare all'interno del range di nessun drone
@@ -756,8 +895,11 @@ class Drone(Entity):
                                 # self.last_mission_coords = temp
                                 # if( self.identifier == 20):
                                 #      print("RIGHT", self.last_mission_coords)
+
                                 self.flag_goes_out_network = True
                                 break
+
+
 
                     else:
                         # if (self.identifier == 21):
@@ -777,9 +919,12 @@ class Drone(Entity):
                     # and \
                     # (utilities.euclidean_distance(self.last_mission_coords,
                     #                             self.parentPath.coords) < self.communication_range):
-                    # if (self.identifier == 12):
-                    #     print("sette")
-                    self.flag_goes_out_network = False
+                    if (self.identifier == 7):
+                        print("sette")
+                    if self.count > 10:
+                        self.flag_goes_out_network = False
+                    else:
+                        self.count += 1
                     # self.parentPath = None
                 #       self.last_mission_coords = self.path[0]
                 #     self.flag_goes_out_network = True

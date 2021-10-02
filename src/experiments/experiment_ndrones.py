@@ -3,7 +3,7 @@ from src.simulation.simulator import Simulator
 import os
 from argparse import ArgumentParser
 
-LEN_TEST = 48000 # around 3hr of mission
+LEN_TEST = 24000 # around 3hr of mission
 DELTA = 20
 
 def sim_setup(n_drones, seed, algorithm_routing):
@@ -14,7 +14,7 @@ def sim_setup(n_drones, seed, algorithm_routing):
     env_height=1500
     drone_com_range=200
     drone_sen_range=0
-    drone_speed=5    #8 #18km/h
+    drone_speed=8    #8 #18km/h
     drone_max_buffer_size=500000
     drone_max_energy=100000
     drone_retransmission_delta=10
