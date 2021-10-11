@@ -20,48 +20,83 @@ class CPVF_routing(BASE_routing):
 
 
     def relay_selection(self, opt_neighbors):
-        """ arg min score  -> geographical approach, take the drone closest to the depot """
-
-        """Qui andiamo a prendere il prossimo drone che è più vicino al depot per inviare i pacchetti.Questo drone è chiamato
-         path parent e viene controllato se è connesso, cioè se attraverso una rete di droni o direttamente riesce a comunicare con 
-         il depot.
-         Nel caso in cui il drone non ha vicini, allora dovrà avvicinarsi al depot"""
-
-
-
+        """ arg min score  -> path parent approach, take the drone parent or relay the packet directly to the depot """
         bestDrone = None
         #bestDroneDistance = np.inf
-
 
         for pck, droneIstance in opt_neighbors:
             exp_position = self.__estimated_neighbor_drone_position(pck)
             neighbors_to_depot_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
             myDrone_to_depot_distance = util.euclidean_distance(self.drone.coords, self.simulator.depot.coords)
 
-
-            #se il nostro vicino è connesso ed è più vicino al depot, viene preso in considerazione per inviare i
-            #messaggi...
-            if (droneIstance.routing_algorithm.is_connected == True) and\
-            (neighbors_to_depot_distance < myDrone_to_depot_distance):
-                  bestDrone = droneIstance
-
-            #altrimenti se è il nostro drone più vicino, il bestdDrone sarà lui.
-            elif(self.drone.routing_algorithm.is_connected == True) and\
-                    (myDrone_to_depot_distance < neighbors_to_depot_distance) and\
-                    (myDrone_to_depot_distance <= util.config.DEPOT_COMMUNICATION_RANGE) and\
-                    (self.drone.communication_range >= myDrone_to_depot_distance):
+            # se il nostro drone è dentro il raggio del depot, inviamo i pacchetti al depot.
+            if self.drone.routing_algorithm.is_connected and\
+                    myDrone_to_depot_distance <= util.config.COMMUNICATION_RANGE_DRONE:
                 bestDrone = self.drone
-                #self.lazy_movement(self.drone,pck,self.drone.simulator.cur_step)
+                break
+            # altrimenti se il nostro parent è un drone che è connesso alla rete e noi siamo connessi a lui, allora sarà
+            # lui il nostro bestDrone a cui inviare i pacchetti
+            elif (droneIstance.routing_algorithm.is_connected) and self.drone.parentPath != None and\
+                    self.drone.parentPath.identifier != self.drone.depot.identifier and\
+                    droneIstance.stop and self.drone.parentPath.identifier == droneIstance.identifier:
+                bestDrone = droneIstance
+                break
+            # altrimenti se il nostro drone, trova un drone vicino, il quale è più vicino di lui al depot, seleziona lui
+            # come bestDrone al quale inviare i pacchetti
+            elif self.drone.routing_algorithm.is_connected is False and \
+                neighbors_to_depot_distance < myDrone_to_depot_distance :
+                   bestDrone = droneIstance
 
-             # Nel caso in cui il drone parent non è ancora connesso, ma è più vicino al depot allora verrà
-             # considerato come miglior drone. Quindi verranno inviati i pacchetti al più vicino anche se
-             # non è connesso. (NON SO SE LASCIARLO)
-            elif(droneIstance.routing_algorithm.is_connected == False) and\
-                    (neighbors_to_depot_distance < myDrone_to_depot_distance):
-
-                    bestDrone = droneIstance
+            #altrimenti è il nostro drone il bestDrone
+            else:
+                bestDrone = self.drone
 
         return bestDrone
+
+
+    # def relay_selection(self, opt_neighbors):
+    #     """ arg min score  -> geographical approach, take the drone closest to the depot """
+    #
+    #     """Qui andiamo a prendere il prossimo drone che è più vicino al depot per inviare i pacchetti.Questo drone è chiamato
+    #      path parent e viene controllato se è connesso, cioè se attraverso una rete di droni o direttamente riesce a comunicare con
+    #      il depot.
+    #      Nel caso in cui il drone non ha vicini, allora dovrà avvicinarsi al depot"""
+    #
+    #
+    #
+    #     bestDrone = None
+    #     #bestDroneDistance = np.inf
+    #
+    #
+    #     for pck, droneIstance in opt_neighbors:
+    #         exp_position = self.__estimated_neighbor_drone_position(pck)
+    #         neighbors_to_depot_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
+    #         myDrone_to_depot_distance = util.euclidean_distance(self.drone.coords, self.simulator.depot.coords)
+    #
+    #
+    #         #se il nostro vicino è connesso ed è più vicino al depot, viene preso in considerazione per inviare i
+    #         #messaggi...
+    #         if (droneIstance.routing_algorithm.is_connected == True) and\
+    #         (neighbors_to_depot_distance < myDrone_to_depot_distance):
+    #               bestDrone = droneIstance
+    #
+    #         #altrimenti se è il nostro drone più vicino, il bestdDrone sarà lui.
+    #         elif(self.drone.routing_algorithm.is_connected == True) and\
+    #                 (myDrone_to_depot_distance < neighbors_to_depot_distance) and\
+    #                 (myDrone_to_depot_distance <= util.config.DEPOT_COMMUNICATION_RANGE) and\
+    #                 (self.drone.communication_range >= myDrone_to_depot_distance):
+    #             bestDrone = self.drone
+    #             #self.lazy_movement(self.drone,pck,self.drone.simulator.cur_step)
+    #
+    #          # Nel caso in cui il drone parent non è ancora connesso, ma è più vicino al depot allora verrà
+    #          # considerato come miglior drone. Quindi verranno inviati i pacchetti al più vicino anche se
+    #          # non è connesso. (NON SO SE LASCIARLO)
+    #         elif(droneIstance.routing_algorithm.is_connected == False) and\
+    #                 (neighbors_to_depot_distance < myDrone_to_depot_distance):
+    #
+    #                 bestDrone = droneIstance
+    #
+    #     return bestDrone
 
 
     def __estimated_neighbor_drone_position(self,hello_message) ->float:

@@ -3,7 +3,7 @@ from src.simulation.simulator import Simulator
 import os
 from argparse import ArgumentParser
 
-LEN_TEST = 24000 # around 3hr of mission
+LEN_TEST = 15000 # 48000 # around 3hr of mission
 DELTA = 20
 
 def sim_setup(n_drones, seed, algorithm_routing):
@@ -14,7 +14,7 @@ def sim_setup(n_drones, seed, algorithm_routing):
     env_height=1500
     drone_com_range=200
     drone_sen_range=0
-    drone_speed=8    #8 #18km/h
+    drone_speed=12    #8 #18km/h
     drone_max_buffer_size=500000
     drone_max_energy=100000
     drone_retransmission_delta=10
@@ -83,6 +83,9 @@ def exp_ndrones(path_filename, n_drones, in_seed, out_seed, algorithm_routing):
         simulation.close()
 
     print("Ndrones: ", n_drones, " - Algo: ", algorithm_routing, "- Scores: ", scores)
+
+
+
 
 if __name__ == "__main__":
     # parser input
