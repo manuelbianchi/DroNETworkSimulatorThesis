@@ -118,9 +118,11 @@ def plot_nspeeds(filename_format: list, n_ranges: list, metric: str,
         if (metric == "area_covered_by_drones_ratio"):
             for i in range(len(y_data)):
                 y_data[i] = y_data[i] * 100
+            print("AREA COVERED BY DRONES:",y_data)
         if (metric == "time_to_create_network_of_drones"):
             for i in range(len(y_data)):
                 y_data[i] = y_data[i] * config.TS_DURATION
+            print("COMPLETION TIME:", y_data)
 
         # TODO: texture and colors and linestyle for the results
         ax.plot(x, y_data, label=alg_k, marker='o')

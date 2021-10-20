@@ -116,9 +116,11 @@ def plot_ndrones(filename_format : list, ndrones :list, metric : str,
         if (metric == "area_covered_by_drones_ratio"):
             for i in range(len(y_data)):
                 y_data[i] = y_data[i] * 100
+            print("AREA COVERED:", y_data)
         if (metric == "time_to_create_network_of_drones"):
             for i in range(len(y_data)):
                 y_data[i] = y_data[i] * config.TS_DURATION
+            print("COMPLETION TIME:", y_data)
 
 
 

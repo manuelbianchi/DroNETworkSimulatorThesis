@@ -421,6 +421,9 @@ class Drone(Entity):
                 # print("Dist del mio drone dal depot", myDrone_distance_depot)
                 # print("Dist del parentDrone dal depot", parentDrone_distance_depot)
                 # print("Mio Drone:", str(self.identifier), "Drone parent", str(self.parentPath.identifier))
+
+                #Il nostro drone ha il parentPath e controlla chi è più vicino al depot, se il nostro drone è più vicino
+                #al depot allora perde il suo parentPath e continua a muoversi.
                 if (myDrone_distance_depot < parentDrone_distance_depot):
                     # if (self.identifier == 9):
                     #     print("uno")
@@ -428,6 +431,9 @@ class Drone(Entity):
                     self.stop = False
                     self.timer = 1000
                     # self.last_mission_coords = self.coords
+                # se il nostro drone non è connesso alla rete di droni allora dovrà muoversi in una coordinata che non
+                # è all'interno del communication range del parent. In questo caso siamo dentro il communication range
+                # di un parent non ancora connesso.
                 elif (self.routing_algorithm.is_connected) == False:
                     # if (self.identifier == 9):
                     #     print("due")
@@ -461,6 +467,8 @@ class Drone(Entity):
                     self.flag_move = True
 
                     # in direzione del depot tutti droni.
+                # il parent è il depot in questo caso se il nostro drone si trova al confine del communication range del
+                # depot, allora potrà fermarsi.
                 elif self.parentPath.identifier == self.depot.identifier:
                     # if (self.identifier == 9):
                     #     print("tre")
@@ -490,7 +498,7 @@ class Drone(Entity):
                     # self.move_routing = False
 
                     # self.coords = self.last_mission_coords
-
+                # se il nostro drone si trova al confine del communication range del parent, allora si il nostro drone si ferma.
                 elif self.parentPath.identifier != self.depot.identifier and self.routing_algorithm.is_connected and self.parentPath.stop and \
                         (math.ceil(utilities.euclidean_distance(self.coords,
                                                                self.parentPath.coords)) == self.communication_range or \
@@ -513,6 +521,8 @@ class Drone(Entity):
                     # print("Confine, blocca")
 
                     self.stop = True
+                #se il nostro drone si trova all'interno del suo parent allora andrà verso l'esterno del communication
+                #range del suo parent.
                 elif self.routing_algorithm.is_connected and \
                         (utilities.euclidean_distance(self.coords,
                                                                self.parentPath.coords)) < self.communication_range-5:
