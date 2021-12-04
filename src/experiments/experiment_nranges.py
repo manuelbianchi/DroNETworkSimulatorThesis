@@ -5,8 +5,8 @@ from argparse import ArgumentParser
 
 LEN_TEST = 15000  # 48000 # around 3hr of mission
 DELTA = 20
-N_DRONES = 10
-DEPOT_COM_RANGE = 300
+N_DRONES = 20
+#DEPOT_COM_RANGE = 200
 
 
 def sim_setup(com_range, seed, algorithm_routing):
@@ -17,18 +17,18 @@ def sim_setup(com_range, seed, algorithm_routing):
     env_height = 1500
     #drone_com_range = 200
     drone_sen_range = 0
-    drone_speed = 12  # 8 #18km/h
+    drone_speed = 8  # 8 #18km/h
     drone_max_buffer_size = 500000
     drone_max_energy = 100000
     drone_retransmission_delta = 10
     drone_communication_success = 0.9  # TODO
-    depot_com_range = DEPOT_COM_RANGE
+    #depot_com_range = DEPOT_COM_RANGE
     depot_coordinates = (750, 0)
     event_duration = 2000  # circa 5min
     event_generation_prob = 0.8
     event_generation_delay = 65
     packets_max_ttl = len_simulation
-    show_plot = False
+    show_plot = True
     routing_algorithm = config.RoutingAlgorithm[algorithm_routing]
     communication_error_type = config.ChannelError.GAUSSIAN
 
@@ -43,6 +43,7 @@ def sim_setup(com_range, seed, algorithm_routing):
         env_height=env_height,
 
         drone_com_range=com_range,
+        depot_com_range=com_range,
         drone_sen_range=drone_sen_range,
         drone_speed=drone_speed,
         drone_max_buffer_size=drone_max_buffer_size,
@@ -51,7 +52,7 @@ def sim_setup(com_range, seed, algorithm_routing):
         drone_communication_success=drone_communication_success,
         event_generation_delay=event_generation_delay,
 
-        depot_com_range=depot_com_range,
+        #depot_com_range=depot_com_range,
         depot_coordinates=depot_coordinates,
 
         event_duration=event_duration,

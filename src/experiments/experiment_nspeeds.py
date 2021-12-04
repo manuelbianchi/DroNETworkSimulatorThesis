@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 
 LEN_TEST = 15000 # 48000 # around 3hr of mission
 DELTA = 20
-N_DRONES = 20
+N_DRONES = 10
 
 def sim_setup(drone_speed, seed, algorithm_routing):
     """ return the sim setup """

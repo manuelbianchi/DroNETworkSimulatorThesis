@@ -14,7 +14,7 @@ def sim_setup(n_drones, seed, algorithm_routing):
     env_height=1500
     drone_com_range=200
     drone_sen_range=0
-    drone_speed=12    #8 #18km/h
+    drone_speed=8    #8 #18km/h
     drone_max_buffer_size=500000
     drone_max_energy=100000
     drone_retransmission_delta=10
@@ -25,7 +25,7 @@ def sim_setup(n_drones, seed, algorithm_routing):
     event_generation_prob=0.8
     event_generation_delay=65
     packets_max_ttl=len_simulation
-    show_plot = False
+    show_plot = True
     routing_algorithm = config.RoutingAlgorithm[algorithm_routing]
     communication_error_type = config.ChannelError.GAUSSIAN
 
